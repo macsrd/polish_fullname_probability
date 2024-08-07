@@ -16,6 +16,11 @@ def load_data(firstname_file, lastname_file):
 
         firstnames_df['probability'] = firstnames_df.iloc[:,2] / total_firstnames
         lastnames_df['probability'] = lastnames_df.iloc[:,1] / total_lastnames
+
+# Convert names to lowercase for case-insensitive comparison
+        firstnames_df.iloc[:,0] = firstnames_df.iloc[:,0].str.lower()
+        lastnames_df.iloc[:,0] = lastnames_df.iloc[:,0].str.lower()
+
     except KeyError as e:
         print(f"Error in data format: Missing expected column {e}")
         return None, None
@@ -24,6 +29,10 @@ def load_data(firstname_file, lastname_file):
 
 # Function to calculate the probability of a given first name and last name
 def calculate_name_probability(firstname, lastname, firstnames_df, lastnames_df):
+
+    firstname = firstname.lower()
+    lastname = lastname.lower()
+
     firstname_prob = firstnames_df[firstnames_df.iloc[:,0] == firstname]['probability']
     lastname_prob = lastnames_df[lastnames_df.iloc[:,0] == lastname]['probability']
     
