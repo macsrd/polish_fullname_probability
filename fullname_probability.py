@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import tkinter as tk
+from tkinter import messagebox
 
 # Function to load data from Excel and calculate probabilities
 def load_data(firstname_file, lastname_file):
@@ -52,11 +54,11 @@ if female_firstnames_df is None or female_lastnames_df is None:
 if male_firstnames_df is None or male_lastnames_df is None:
     print("Failed to load male names data.")
 
-# Function to get user input and calculate probability
-def get_user_input_and_calculate_probability():
-    firstname = input("Enter the first name: ").strip()
-    lastname = input("Enter the last name: ").strip()
-    gender = input("Enter the gender (male/female): ").strip().lower()
+# Function to handle button click and calculate probability
+def on_calculate():
+    firstname = entry_firstname.get().strip()
+    lastname = entry_lastname.get().strip()
+    gender = gender_var.get().strip().lower()
 
     if gender == 'female':
         firstnames_df = female_firstnames_df
@@ -65,15 +67,39 @@ def get_user_input_and_calculate_probability():
         firstnames_df = male_firstnames_df
         lastnames_df = male_lastnames_df
     else:
-        print("Invalid gender entered. Please enter 'male' or 'female'.")
+        messagebox.showerror("Error", "Invalid gender. Please select 'male' or 'female'.")
         return
 
     probability = calculate_name_probability(firstname, lastname, firstnames_df, lastnames_df)
     if probability is not None:
-        print(f"The probability of the name '{firstname} {lastname}' is: {probability * 100:.6f}%")
+        result_text = f"The probability of the name '{firstname} {lastname}' is: {probability * 100:.6f}%"
     else:
-        print(f"The name '{firstname} {lastname}' was not found in the dataset.")
+        result_text = f"The name '{firstname} {lastname}' was not found in the dataset."
+    
+    messagebox.showinfo("Result", result_text)
 
-# Example usage
-if female_firstnames_df is not None and female_lastnames_df is not None and male_firstnames_df is not None and male_lastnames_df is not None:
-    get_user_input_and_calculate_probability()
+# Create the main window
+root = tk.Tk()
+root.title("Name Probability Calculator")
+
+# Create and place widgets
+tk.Label(root, text="First Name:").grid(row=0, column=0, padx=10, pady=5)
+entry_firstname = tk.Entry(root)
+entry_firstname.grid(row=0, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Last Name:").grid(row=1, column=0, padx=10, pady=5)
+entry_lastname = tk.Entry(root)
+entry_lastname.grid(row=1, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Gender:").grid(row=2, column=0, padx=10, pady=5)
+gender_var = tk.StringVar(value="male")
+gender_male = tk.Radiobutton(root, text="Male", variable=gender_var, value="male")
+gender_female = tk.Radiobutton(root, text="Female", variable=gender_var, value="female")
+gender_male.grid(row=2, column=1, padx=10, pady=5, sticky='w')
+gender_female.grid(row=2, column=1, padx=10, pady=5, sticky='e')
+
+calculate_button = tk.Button(root, text="Calculate Probability", command=on_calculate)
+calculate_button.grid(row=3, column=0, columnspan=2, pady=20)
+
+# Start the main loop
+root.mainloop()
